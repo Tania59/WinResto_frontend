@@ -134,16 +134,16 @@ export function KitchenApp({ onBack }: { onBack: () => void }) {
       {/* ============================================================
           HEADER - Version responsive
           ============================================================ */}
-      <header className="bg-[#161B22] border-b border-white/8 px-3 sm:px-5 py-2 sm:py-3 flex flex-wrap items-center justify-between gap-2 flex-shrink-0">
+      <header className="bg-[#161B22] border-b border-white/8 px-3 sm:px-5 py-2 sm:py-3 flex flex-wrap items-center justify-between gap-2 shrink-0">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#D97706]/20 rounded-xl flex items-center justify-center flex-shrink-0">
-            <ChefHat size={18} className="sm:size-[22px] text-[#D97706]" />
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#D97706]/20 rounded-xl flex items-center justify-center shrink-0">
+            <ChefHat size={18} className="sm:size-5.5 text-[#D97706]" />
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
               <h1 className="text-sm sm:text-base text-white truncate">Cuisine · Le Palmier</h1>
               {/* 3A️⃣ : "Live" caché sur très petits écrans */}
-              <span className="flex items-center gap-1 bg-[#22C55E]/10 text-[#22C55E] text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full border border-[#22C55E]/20 flex-shrink-0">
+              <span className="flex items-center gap-1 bg-[#22C55E]/10 text-[#22C55E] text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full border border-[#22C55E]/20 shrink-0">
                 <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#22C55E] animate-pulse" />
                 {!isTiny && "Live"}
               </span>
@@ -151,7 +151,7 @@ export function KitchenApp({ onBack }: { onBack: () => void }) {
             <p className="text-white/40 text-[10px] sm:text-xs font-mono tabular-nums">{timeStr}</p>
           </div>
         </div>
-        <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
           {/* 3B️⃣ : Compteur "nouveau" simplifié sur très petits écrans */}
           {counts.en_attente > 0 && (
             <motion.span
@@ -159,7 +159,7 @@ export function KitchenApp({ onBack }: { onBack: () => void }) {
               transition={{ repeat: Infinity, duration: 1.2 }}
               className="bg-[#F59E0B] text-black text-[10px] sm:text-sm px-2 sm:px-3 py-0.5 sm:py-1 rounded-full flex items-center gap-1 whitespace-nowrap"
             >
-              <Flame size={11} className="sm:size-[13px]" />
+              <Flame size={11} className="sm:size-3.25" />
               {isTiny ? counts.en_attente : `${counts.en_attente} nouveau${counts.en_attente > 1 ? "x" : ""}`}
             </motion.span>
           )}
@@ -175,7 +175,7 @@ export function KitchenApp({ onBack }: { onBack: () => void }) {
       {/* ============================================================
           FILTER BAR - Version responsive avec scroll horizontal
           ============================================================ */}
-      <div className="bg-[#161B22]/60 border-b border-white/8 px-2 sm:px-5 py-2 sm:py-3 flex gap-1.5 sm:gap-2 overflow-x-auto flex-shrink-0 scrollbar-hide">
+      <div className="bg-[#161B22]/60 border-b border-white/8 px-2 sm:px-5 py-2 sm:py-3 flex gap-1.5 sm:gap-2 overflow-x-auto shrink-0 scrollbar-hide">
         {(["tous", "en_attente", "en_preparation", "prets"] as KDSFilter[]).map(f => {
           const labels: Record<KDSFilter, string> = {
             tous: "Tous",
@@ -194,7 +194,7 @@ export function KitchenApp({ onBack }: { onBack: () => void }) {
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-sm flex items-center gap-1.5 sm:gap-2 transition-all whitespace-nowrap flex-shrink-0 ${filter === f ? activeColors[f] : "bg-white/6 text-white/50 hover:bg-white/12 hover:text-white"}`}
+              className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-sm flex items-center gap-1.5 sm:gap-2 transition-all whitespace-nowrap shrink-0 ${filter === f ? activeColors[f] : "bg-white/6 text-white/50 hover:bg-white/12 hover:text-white"}`}
             >
               {labels[f]}
               {c > 0 && (
@@ -213,7 +213,7 @@ export function KitchenApp({ onBack }: { onBack: () => void }) {
       <div className="flex-1 overflow-y-auto p-2 sm:p-4">
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-white/30">
-            <ChefHat size={48} className="sm:size-[64px] mb-4 opacity-50" />
+            <ChefHat size={48} className="sm:size-16 mb-4 opacity-50" />
             <p className="text-lg sm:text-xl mb-1">Cuisine au calme !</p>
             <p className="text-xs sm:text-sm">Aucun ticket en attente 🧘</p>
           </div>
@@ -243,23 +243,23 @@ export function KitchenApp({ onBack }: { onBack: () => void }) {
                           </span>
                           {isReady && (
                             <span className="bg-[#22C55E]/15 text-[#22C55E] text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full border border-[#22C55E]/20 flex items-center gap-0.5 sm:gap-1 whitespace-nowrap">
-                              <CheckCircle size={10} className="sm:size-[11px]" /> PRÊT
+                              <CheckCircle size={10} className="sm:size-2.75" /> PRÊT
                             </span>
                           )}
                           {order.isLate && !isReady && (
                             <span className="bg-[#EF4444]/15 text-[#EF4444] text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full border border-[#EF4444]/20 flex items-center gap-0.5 sm:gap-1 whitespace-nowrap">
-                              <AlertTriangle size={10} className="sm:size-[11px]" /> Retard
+                              <AlertTriangle size={10} className="sm:size-2.75" /> Retard
                             </span>
                           )}
                         </div>
                         <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                           <span className="text-white/40 text-[10px] sm:text-xs flex items-center gap-1">
-                            <Clock size={9} className="sm:size-[10px]" /> {order.sentAt}
+                            <Clock size={9} className="sm:size-2.5" /> {order.sentAt}
                           </span>
                           <TicketTimer orderId={order.id} />
                         </div>
                       </div>
-                      <span className="text-white/30 text-[10px] sm:text-xs flex-shrink-0">{order.id}</span>
+                      <span className="text-white/30 text-[10px] sm:text-xs shrink-0">{order.id}</span>
                     </div>
 
                     {/* Items */}
@@ -268,15 +268,15 @@ export function KitchenApp({ onBack }: { onBack: () => void }) {
                         const isDone = item.status === "pret" || item.status === "servi";
                         return (
                           <div key={item.id} className={`flex items-start gap-1.5 sm:gap-2 transition-opacity ${isDone ? "opacity-50" : ""}`}>
-                            <span className="bg-white/8 text-white/60 text-[11px] sm:text-sm px-1.5 sm:px-2 py-0.5 rounded-lg mt-0.5 flex-shrink-0 font-mono">
+                            <span className="bg-white/8 text-white/60 text-[11px] sm:text-sm px-1.5 sm:px-2 py-0.5 rounded-lg mt-0.5 shrink-0 font-mono">
                               {item.quantity}×
                             </span>
                             <div className="flex-1 min-w-0">
-                              <p className={`text-sm sm:text-base leading-tight break-words ${isDone ? "line-through text-white/40" : "text-white"}`}>
+                              <p className={`text-sm sm:text-base leading-tight wrap-break-word ${isDone ? "line-through text-white/40" : "text-white"}`}>
                                 {item.name}
                               </p>
                               {item.note && (
-                                <p className="text-[#F59E0B] text-[10px] sm:text-xs mt-0.5 bg-[#F59E0B]/10 px-1.5 sm:px-2 py-0.5 rounded-lg inline-block break-words">
+                                <p className="text-[#F59E0B] text-[10px] sm:text-xs mt-0.5 bg-[#F59E0B]/10 px-1.5 sm:px-2 py-0.5 rounded-lg inline-block wrap-break-word">
                                   ⚠ {item.note}
                                 </p>
                               )}
@@ -284,12 +284,12 @@ export function KitchenApp({ onBack }: { onBack: () => void }) {
                             {!isDone && (
                               <button
                                 onClick={() => updateItem(order.id, item.id, item.status === "en_attente" ? "en_preparation" : "pret")}
-                                className={`text-[10px] sm:text-xs px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded-lg transition-all flex-shrink-0 whitespace-nowrap active:scale-95 ${item.status === "en_attente" ? "bg-[#3B82F6]/15 text-[#60A5FA] hover:bg-[#3B82F6]/25 border border-[#3B82F6]/20" : "bg-[#22C55E]/15 text-[#4ADE80] hover:bg-[#22C55E]/25 border border-[#22C55E]/20"}`}
+                                className={`text-[10px] sm:text-xs px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded-lg transition-all shrink-0 whitespace-nowrap active:scale-95 ${item.status === "en_attente" ? "bg-[#3B82F6]/15 text-[#60A5FA] hover:bg-[#3B82F6]/25 border border-[#3B82F6]/20" : "bg-[#22C55E]/15 text-[#4ADE80] hover:bg-[#22C55E]/25 border border-[#22C55E]/20"}`}
                               >
                                 {item.status === "en_attente" ? "▶ En cours" : "✓ Prêt"}
                               </button>
                             )}
-                            {isDone && <span className="text-[#22C55E]/60 text-xs px-1 sm:px-2 py-1 flex-shrink-0">✓</span>}
+                            {isDone && <span className="text-[#22C55E]/60 text-xs px-1 sm:px-2 py-1 shrink-0">✓</span>}
                           </div>
                         );
                       })}
@@ -300,7 +300,7 @@ export function KitchenApp({ onBack }: { onBack: () => void }) {
                       {isReady ? (
                         <>
                           <div className="flex items-center gap-1.5 sm:gap-2 text-[#4ADE80] text-[10px] sm:text-xs bg-[#22C55E]/8 border border-[#22C55E]/15 px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl">
-                            <CheckCircle size={12} className="sm:size-[13px]" /> Serveur notifié ✓
+                            <CheckCircle size={12} className="sm:size-3.25" /> Serveur notifié ✓
                           </div>
                           {/* 3E️⃣ : "Archiver le ticket" devient "Archiver" sur très petits écrans */}
                           <button
