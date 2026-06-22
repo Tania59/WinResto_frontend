@@ -5,6 +5,20 @@ import { CheckCircle, AlertTriangle, ChefHat, Clock, Flame } from "lucide-react"
 import { activeOrders } from "../../data/mockData";
 import type { Order, OrderItemStatus } from "../../data/mockData";
 
+// ============================================================
+// 1️⃣ HOOK POUR DÉTECTER LES TRÈS PETITS ÉCRANS (< 360px)
+// ============================================================
+function useIsTinyScreen() {
+  const [isTiny, setIsTiny] = useState(false);
+  useEffect(() => {
+    const check = () => setIsTiny(window.innerWidth < 360);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+  return isTiny;
+}
+
 type KDSFilter = "tous" | "en_attente" | "en_preparation" | "prets";
 
 // Each order gets a start time offset (minutes ago from now)
@@ -29,7 +43,7 @@ function TicketTimer({ orderId }: { orderId: string }) {
   const offset = orderStartOffsets[orderId] ?? 2;
   const { display, isLate, isWarning } = useElapsed(offset);
   return (
-    <span className={`text-xs px-2 py-0.5 rounded-lg font-mono tabular-nums ${isLate ? "bg-[#EF4444]/20 text-[#EF4444]" : isWarning ? "bg-[#F59E0B]/20 text-[#F59E0B]" : "bg-white/10 text-white/50"}`}>
+    <span className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-lg font-mono tabular-nums whitespace-nowrap ${isLate ? "bg-[#EF4444]/20 text-[#EF4444]" : isWarning ? "bg-[#F59E0B]/20 text-[#F59E0B]" : "bg-white/10 text-white/50"}`}>
       {isLate && "⚠ "}{display}
     </span>
   );
@@ -39,6 +53,11 @@ export function KitchenApp({ onBack }: { onBack: () => void }) {
   const [filter, setFilter] = useState<KDSFilter>("tous");
   const [orders, setOrders] = useState<Order[]>(activeOrders);
   const [time, setTime] = useState(new Date());
+
+  // ============================================================
+  // 2️⃣ UTILISATION DU HOOK POUR LES TRÈS PETITS ÉCRANS
+  // ============================================================
+  const isTiny = useIsTinyScreen();
 
   // Live clock
   useEffect(() => {
@@ -112,39 +131,58 @@ export function KitchenApp({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="flex flex-col h-full bg-[#0D1117] text-white overflow-hidden">
-      {/* Header */}
-      <header className="bg-[#161B22] border-b border-white/8 px-5 py-3 flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#D97706]/20 rounded-xl flex items-center justify-center">
-            <ChefHat size={22} className="text-[#D97706]" />
+      {/* ============================================================
+          HEADER - Version responsive
+          ============================================================ */}
+      <header className="bg-[#161B22] border-b border-white/8 px-3 sm:px-5 py-2 sm:py-3 flex flex-wrap items-center justify-between gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#D97706]/20 rounded-xl flex items-center justify-center flex-shrink-0">
+            <ChefHat size={18} className="sm:size-[22px] text-[#D97706]" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-white">Cuisine · Le Palmier</h1>
-              <span className="flex items-center gap-1 bg-[#22C55E]/10 text-[#22C55E] text-xs px-2 py-0.5 rounded-full border border-[#22C55E]/20">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse" /> Live
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+              <h1 className="text-sm sm:text-base text-white truncate">Cuisine · Le Palmier</h1>
+              {/* 3A️⃣ : "Live" caché sur très petits écrans */}
+              <span className="flex items-center gap-1 bg-[#22C55E]/10 text-[#22C55E] text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full border border-[#22C55E]/20 flex-shrink-0">
+                <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#22C55E] animate-pulse" />
+                {!isTiny && "Live"}
               </span>
             </div>
-            <p className="text-white/40 text-xs font-mono tabular-nums">{timeStr}</p>
+            <p className="text-white/40 text-[10px] sm:text-xs font-mono tabular-nums">{timeStr}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+          {/* 3B️⃣ : Compteur "nouveau" simplifié sur très petits écrans */}
           {counts.en_attente > 0 && (
             <motion.span
-              animate={{ scale: [1, 1.05, 1] }} transition={{ repeat: Infinity, duration: 1.2 }}
-              className="bg-[#F59E0B] text-black text-sm px-3 py-1 rounded-full flex items-center gap-1.5"
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ repeat: Infinity, duration: 1.2 }}
+              className="bg-[#F59E0B] text-black text-[10px] sm:text-sm px-2 sm:px-3 py-0.5 sm:py-1 rounded-full flex items-center gap-1 whitespace-nowrap"
             >
-              <Flame size={13} /> {counts.en_attente} nouveau{counts.en_attente > 1 ? "x" : ""}
+              <Flame size={11} className="sm:size-[13px]" />
+              {isTiny ? counts.en_attente : `${counts.en_attente} nouveau${counts.en_attente > 1 ? "x" : ""}`}
             </motion.span>
           )}
-          <button onClick={onBack} className="text-white/40 text-sm border border-white/15 px-3 py-1.5 rounded-lg hover:text-white hover:border-white/30 transition-colors">Quitter</button>
+          <button
+            onClick={onBack}
+            className="text-white/40 text-[10px] sm:text-sm border border-white/15 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg hover:text-white hover:border-white/30 transition-colors whitespace-nowrap"
+          >
+            Quitter
+          </button>
         </div>
       </header>
 
-      {/* Filter bar */}
-      <div className="bg-[#161B22]/60 border-b border-white/8 px-5 py-3 flex gap-2 flex-shrink-0">
+      {/* ============================================================
+          FILTER BAR - Version responsive avec scroll horizontal
+          ============================================================ */}
+      <div className="bg-[#161B22]/60 border-b border-white/8 px-2 sm:px-5 py-2 sm:py-3 flex gap-1.5 sm:gap-2 overflow-x-auto flex-shrink-0 scrollbar-hide">
         {(["tous", "en_attente", "en_preparation", "prets"] as KDSFilter[]).map(f => {
-          const labels: Record<KDSFilter, string> = { tous: "Tous", en_attente: "En attente", en_preparation: "En cours", prets: "Prêts" };
+          const labels: Record<KDSFilter, string> = {
+            tous: "Tous",
+            en_attente: "En attente",
+            en_preparation: "En cours",
+            prets: "Prêts"
+          };
           const c = counts[f];
           const activeColors: Record<KDSFilter, string> = {
             tous: "bg-white/15 text-white",
@@ -153,27 +191,34 @@ export function KitchenApp({ onBack }: { onBack: () => void }) {
             prets: "bg-[#22C55E] text-white",
           };
           return (
-            <button key={f} onClick={() => setFilter(f)}
-              className={`px-4 py-2 rounded-xl text-sm flex items-center gap-2 transition-all ${filter === f ? activeColors[f] : "bg-white/6 text-white/50 hover:bg-white/12 hover:text-white"}`}>
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-sm flex items-center gap-1.5 sm:gap-2 transition-all whitespace-nowrap flex-shrink-0 ${filter === f ? activeColors[f] : "bg-white/6 text-white/50 hover:bg-white/12 hover:text-white"}`}
+            >
               {labels[f]}
               {c > 0 && (
-                <span className={`px-1.5 py-0.5 rounded-full text-xs ${filter === f ? "bg-black/20" : "bg-white/15"}`}>{c}</span>
+                <span className={`px-1 py-0.5 rounded-full text-[10px] sm:text-xs ${filter === f ? "bg-black/20" : "bg-white/15"}`}>
+                  {c}
+                </span>
               )}
             </button>
           );
         })}
       </div>
 
-      {/* Tickets */}
-      <div className="flex-1 overflow-y-auto p-4">
+      {/* ============================================================
+          TICKETS - Version responsive
+          ============================================================ */}
+      <div className="flex-1 overflow-y-auto p-2 sm:p-4">
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-white/30">
-            <ChefHat size={64} className="mb-4 opacity-50" />
-            <p className="text-xl mb-1">Cuisine au calme !</p>
-            <p className="text-sm">Aucun ticket en attente 🧘</p>
+            <ChefHat size={48} className="sm:size-[64px] mb-4 opacity-50" />
+            <p className="text-lg sm:text-xl mb-1">Cuisine au calme !</p>
+            <p className="text-xs sm:text-sm">Aucun ticket en attente 🧘</p>
           </div>
         ) : (
-          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
             <AnimatePresence>
               {filtered.map(order => {
                 const isReady = order.status === "pret";
@@ -189,80 +234,96 @@ export function KitchenApp({ onBack }: { onBack: () => void }) {
                     className={`bg-[#161B22] rounded-2xl border-l-4 ${border} flex flex-col overflow-hidden ${isReady ? "ring-1 ring-[#22C55E]/25" : ""}`}
                   >
                     {/* Ticket header */}
-                    <div className="px-4 pt-4 pb-3 border-b border-white/8 flex items-start justify-between">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-white text-xl">Table {order.tableNumber}</span>
+                    <div className="px-3 sm:px-4 pt-3 sm:pt-4 pb-2 sm:pb-3 border-b border-white/8 flex flex-wrap items-start justify-between gap-1">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap mb-0.5 sm:mb-1">
+                          {/* 3C️⃣ : "Table" devient "T" sur très petits écrans */}
+                          <span className="text-lg sm:text-xl text-white">
+                            {isTiny ? `T${order.tableNumber}` : `Table ${order.tableNumber}`}
+                          </span>
                           {isReady && (
-                            <span className="bg-[#22C55E]/15 text-[#22C55E] text-xs px-2 py-0.5 rounded-full border border-[#22C55E]/20 flex items-center gap-1">
-                              <CheckCircle size={11} /> PRÊT
+                            <span className="bg-[#22C55E]/15 text-[#22C55E] text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full border border-[#22C55E]/20 flex items-center gap-0.5 sm:gap-1 whitespace-nowrap">
+                              <CheckCircle size={10} className="sm:size-[11px]" /> PRÊT
                             </span>
                           )}
                           {order.isLate && !isReady && (
-                            <span className="bg-[#EF4444]/15 text-[#EF4444] text-xs px-2 py-0.5 rounded-full border border-[#EF4444]/20 flex items-center gap-1">
-                              <AlertTriangle size={11} /> Retard
+                            <span className="bg-[#EF4444]/15 text-[#EF4444] text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full border border-[#EF4444]/20 flex items-center gap-0.5 sm:gap-1 whitespace-nowrap">
+                              <AlertTriangle size={10} className="sm:size-[11px]" /> Retard
                             </span>
                           )}
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-white/40 text-xs flex items-center gap-1">
-                            <Clock size={10} /> {order.sentAt}
+                        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                          <span className="text-white/40 text-[10px] sm:text-xs flex items-center gap-1">
+                            <Clock size={9} className="sm:size-[10px]" /> {order.sentAt}
                           </span>
                           <TicketTimer orderId={order.id} />
                         </div>
                       </div>
-                      <span className="text-white/30 text-xs">{order.id}</span>
+                      <span className="text-white/30 text-[10px] sm:text-xs flex-shrink-0">{order.id}</span>
                     </div>
 
                     {/* Items */}
-                    <div className="p-4 flex-1 space-y-3">
+                    <div className="p-3 sm:p-4 flex-1 space-y-2.5 sm:space-y-3">
                       {order.items.map(item => {
                         const isDone = item.status === "pret" || item.status === "servi";
                         return (
-                          <div key={item.id} className={`flex items-start gap-2 transition-opacity ${isDone ? "opacity-50" : ""}`}>
-                            <span className="bg-white/8 text-white/60 text-sm px-2 py-0.5 rounded-lg mt-0.5 flex-shrink-0 font-mono">{item.quantity}×</span>
+                          <div key={item.id} className={`flex items-start gap-1.5 sm:gap-2 transition-opacity ${isDone ? "opacity-50" : ""}`}>
+                            <span className="bg-white/8 text-white/60 text-[11px] sm:text-sm px-1.5 sm:px-2 py-0.5 rounded-lg mt-0.5 flex-shrink-0 font-mono">
+                              {item.quantity}×
+                            </span>
                             <div className="flex-1 min-w-0">
-                              <p className={`text-sm leading-tight ${isDone ? "line-through text-white/40" : "text-white"}`}>{item.name}</p>
+                              <p className={`text-sm sm:text-base leading-tight break-words ${isDone ? "line-through text-white/40" : "text-white"}`}>
+                                {item.name}
+                              </p>
                               {item.note && (
-                                <p className="text-[#F59E0B] text-xs mt-0.5 bg-[#F59E0B]/10 px-2 py-0.5 rounded-lg inline-block">⚠ {item.note}</p>
+                                <p className="text-[#F59E0B] text-[10px] sm:text-xs mt-0.5 bg-[#F59E0B]/10 px-1.5 sm:px-2 py-0.5 rounded-lg inline-block break-words">
+                                  ⚠ {item.note}
+                                </p>
                               )}
                             </div>
                             {!isDone && (
                               <button
                                 onClick={() => updateItem(order.id, item.id, item.status === "en_attente" ? "en_preparation" : "pret")}
-                                className={`text-xs px-2.5 py-1.5 rounded-lg transition-all flex-shrink-0 whitespace-nowrap active:scale-95 ${item.status === "en_attente" ? "bg-[#3B82F6]/15 text-[#60A5FA] hover:bg-[#3B82F6]/25 border border-[#3B82F6]/20" : "bg-[#22C55E]/15 text-[#4ADE80] hover:bg-[#22C55E]/25 border border-[#22C55E]/20"}`}>
+                                className={`text-[10px] sm:text-xs px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded-lg transition-all flex-shrink-0 whitespace-nowrap active:scale-95 ${item.status === "en_attente" ? "bg-[#3B82F6]/15 text-[#60A5FA] hover:bg-[#3B82F6]/25 border border-[#3B82F6]/20" : "bg-[#22C55E]/15 text-[#4ADE80] hover:bg-[#22C55E]/25 border border-[#22C55E]/20"}`}
+                              >
                                 {item.status === "en_attente" ? "▶ En cours" : "✓ Prêt"}
                               </button>
                             )}
-                            {isDone && <span className="text-[#22C55E]/60 text-xs px-2 py-1 flex-shrink-0">✓</span>}
+                            {isDone && <span className="text-[#22C55E]/60 text-xs px-1 sm:px-2 py-1 flex-shrink-0">✓</span>}
                           </div>
                         );
                       })}
                     </div>
 
                     {/* Actions */}
-                    <div className="px-4 pb-4 space-y-2">
+                    <div className="px-3 sm:px-4 pb-3 sm:pb-4 space-y-1.5 sm:space-y-2">
                       {isReady ? (
                         <>
-                          <div className="flex items-center gap-2 text-[#4ADE80] text-xs bg-[#22C55E]/8 border border-[#22C55E]/15 px-3 py-2 rounded-xl">
-                            <CheckCircle size={13} /> Serveur notifié ✓
+                          <div className="flex items-center gap-1.5 sm:gap-2 text-[#4ADE80] text-[10px] sm:text-xs bg-[#22C55E]/8 border border-[#22C55E]/15 px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl">
+                            <CheckCircle size={12} className="sm:size-[13px]" /> Serveur notifié ✓
                           </div>
-                          <button onClick={() => archiveOrder(order.id)}
-                            className="w-full bg-white/6 text-white/50 py-2.5 rounded-xl text-sm hover:bg-white/10 hover:text-white transition-colors">
-                            Archiver le ticket
+                          {/* 3E️⃣ : "Archiver le ticket" devient "Archiver" sur très petits écrans */}
+                          <button
+                            onClick={() => archiveOrder(order.id)}
+                            className="w-full bg-white/6 text-white/50 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm hover:bg-white/10 hover:text-white transition-colors"
+                          >
+                            {isTiny ? "Archiver" : "Archiver le ticket"}
                           </button>
                         </>
                       ) : (
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
+                          {/* 3D️⃣ : Textes des boutons simplifiés sur très petits écrans */}
                           <button
                             onClick={() => updateAllItems(order.id, "en_preparation")}
-                            className="bg-[#3B82F6]/12 text-[#60A5FA] border border-[#3B82F6]/20 py-2.5 rounded-xl text-sm hover:bg-[#3B82F6]/20 transition-colors active:scale-[0.97]">
-                            ▶ Tout démarrer
+                            className="bg-[#3B82F6]/12 text-[#60A5FA] border border-[#3B82F6]/20 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-sm hover:bg-[#3B82F6]/20 transition-colors active:scale-[0.97] truncate"
+                          >
+                            {isTiny ? "▶ Démarrer" : "▶ Tout démarrer"}
                           </button>
                           <button
                             onClick={() => updateAllItems(order.id, "pret")}
-                            className="bg-[#22C55E]/12 text-[#4ADE80] border border-[#22C55E]/20 py-2.5 rounded-xl text-sm hover:bg-[#22C55E]/20 transition-colors active:scale-[0.97]">
-                            ✓ Tout prêt
+                            className="bg-[#22C55E]/12 text-[#4ADE80] border border-[#22C55E]/20 py-2 sm:py-2.5 rounded-xl text-[10px] sm:text-sm hover:bg-[#22C55E]/20 transition-colors active:scale-[0.97] truncate"
+                          >
+                            {isTiny ? "✓ Prêt" : "✓ Tout prêt"}
                           </button>
                         </div>
                       )}
