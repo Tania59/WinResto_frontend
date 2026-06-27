@@ -9,3 +9,13 @@ export default {
   },
   plugins: [],
 }
+// tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      screens: {
+        'xs': '400px',  // ← Ajoute ceci pour les très petits écrans
+      },
+    },
+  },
+}

@@ -6,7 +6,7 @@ import {
   ArrowRight, Zap, Globe, BarChart2, Star
 } from "lucide-react";
 import { ClientApp } from "./components/client/ClientApp";
-import { WaiterApp } from "./components/waiter/WaiterApp";
+import { ServerApp } from "./components/server/ServerApp";
 import { KitchenApp } from "./components/kitchen/KitchenApp";
 import { AdminApp } from "./components/admin/AdminApp";
 import { SuperAdminApp } from "./components/superadmin/SuperAdminApp";
@@ -27,7 +27,7 @@ const roles = [
     borderHover: "hover:border-[#D97706]",
     arrowColor: "text-[#D97706]",
     preview: "390px · iPhone frame",
-    steps: ["Scanner QR", "Choisir", "Commander", "Suivre"],
+    steps: ["Scanner QR", "Choisir", "Commander", "Suivre"],  // ✅ Tout sur une ligne
   },
   {
     id: "waiter" as const,
@@ -101,6 +101,10 @@ const platformStats = [
 export default function App() {
   const [currentRole, setCurrentRole] = useState<Role>("selector");
 
+  const handleBack = () => {
+    setCurrentRole("selector");
+  };
+
   const roleApps: Record<Exclude<Role, "selector">, React.ReactNode> = {
     client: (
       <div className="w-full h-full flex items-center justify-center bg-[#111827] relative overflow-hidden">
@@ -108,17 +112,33 @@ export default function App() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,#D97706/15,transparent_60%)]" />
         <div className="relative z-10 flex flex-col items-center gap-4">
           <div className="text-white/40 text-xs tracking-widest uppercase">Vue mobile · 390px</div>
-          <div className="w-[390px] max-h-[844px] h-[min(844px,calc(100vh-6rem))] rounded-[2.5rem] overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.6)] border-[6px] border-[#374151] relative bg-black">
+          <div className="w-97.5 max-h-211 h-[min(844px,calc(100vh-6rem))] rounded-[2.5rem] overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.6)] border-[6px] border-[#374151] relative bg-black">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-7 bg-[#1F2937] rounded-b-2xl z-20" />
-            <ClientApp onBack={() => setCurrentRole("selector")} />
+            <ClientApp onBack={handleBack} />
           </div>
         </div>
       </div>
     ),
-    waiter: <div className="w-full h-full bg-[#F8FAFC] overflow-hidden"><WaiterApp onBack={() => setCurrentRole("selector")} /></div>,
-    kitchen: <div className="w-full h-full overflow-hidden"><KitchenApp onBack={() => setCurrentRole("selector")} /></div>,
-    admin: <div className="w-full h-full overflow-hidden"><AdminApp onBack={() => setCurrentRole("selector")} /></div>,
-    superadmin: <div className="w-full h-full overflow-hidden"><SuperAdminApp onBack={() => setCurrentRole("selector")} /></div>,
+    waiter: (
+      <div className="w-full h-full bg-[#F8FAFC] overflow-hidden">
+        <ServerApp onBack={handleBack} />
+      </div>
+    ),
+    kitchen: (
+      <div className="w-full h-full overflow-hidden">
+        <KitchenApp onBack={handleBack} />
+      </div>
+    ),
+    admin: (
+      <div className="w-full h-full overflow-hidden">
+        <AdminApp onBack={handleBack} />
+      </div>
+    ),
+    superadmin: (
+      <div className="w-full h-full overflow-hidden">
+        <SuperAdminApp onBack={handleBack} />
+      </div>
+    ),
   };
 
   return (
@@ -211,9 +231,9 @@ export default function App() {
             </div>
 
             {/* Role selector */}
-            <div className="flex-1 px-6 py-8">
-              <p className="text-center text-[#6B7280] text-sm mb-6 uppercase tracking-widest">Choisissez votre rôle</p>
-              <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="flex-1 px-4 sm:px-6 py-6 sm:py-8">
+              <p className="text-center text-[#6B7280] text-xs sm:text-sm mb-4 sm:mb-6 uppercase tracking-widest">Choisissez votre rôle</p>
+              <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {roles.map((role, i) => {
                   const Icon = role.icon;
                   return (
@@ -225,40 +245,50 @@ export default function App() {
                       transition={{ delay: 0.05 * i, duration: 0.3, ease: "easeOut" }}
                       whileHover={{ y: -2, transition: { duration: 0.15 } }}
                       whileTap={{ scale: 0.98 }}
-                      className={`bg-white rounded-2xl border-2 border-[#E5E7EB] ${role.borderHover} p-5 text-left transition-all duration-200 group cursor-pointer shadow-[0_1px_3px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]`}
+                      className={`bg-white rounded-2xl border-2 border-[#E5E7EB] ${role.borderHover} p-4 sm:p-5 text-left transition-all duration-200 group cursor-pointer shadow-[0_1px_3px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)]`}
                     >
                       {/* Top row */}
-                      <div className="flex items-start justify-between mb-4">
-                        <div className={`w-11 h-11 bg-gradient-to-br ${role.bgGrad} rounded-xl flex items-center justify-center border border-black/5`}>
-                          <Icon size={22} style={{ color: role.accentColor }} />
+                      <div className="flex items-start justify-between mb-3 sm:mb-4">
+                        <div className={`w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-br ${role.bgGrad} rounded-xl flex items-center justify-center border border-black/5 shrink-0`}>
+                          <Icon size={18} className="sm:size-[22px]" style={{ color: role.accentColor }} />
                         </div>
-                        <span className={`text-xs px-2.5 py-1 rounded-full ${role.badgeColor}`}>{role.badge}</span>
+                        <span className={`text-[10px] sm:text-xs px-2 sm:px-2.5 py-1 rounded-full ${role.badgeColor} shrink-0 ml-2`}>
+                          {role.badge}
+                        </span>
                       </div>
 
                       {/* Title */}
-                      <h3 className="text-[#1F2937] mb-0.5">{role.title}</h3>
-                      <p className="text-xs mb-3" style={{ color: role.accentColor }}>{role.subtitle}</p>
-                      <p className="text-[#6B7280] text-sm leading-relaxed mb-4">{role.description}</p>
+                      <h3 className="text-[#1F2937] text-sm sm:text-base mb-0.5 truncate">{role.title}</h3>
+                      <p className="text-[10px] sm:text-xs mb-2 sm:mb-3 truncate" style={{ color: role.accentColor }}>
+                        {role.subtitle}
+                      </p>
+                      <p className="text-[#6B7280] text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4 line-clamp-2">
+                        {role.description}
+                      </p>
 
-                      {/* Steps */}
-                      <div className="flex items-center gap-1.5 mb-4">
+                      {/* Steps - Version compacte */}
+                      <div className="flex items-center flex-wrap gap-1 sm:gap-1.5 mb-3 sm:mb-4">
                         {role.steps.map((step, si) => (
-                          <div key={step} className="flex items-center gap-1.5">
-                            <span className="text-[#9CA3AF] text-xs bg-[#F3F4F6] px-2 py-0.5 rounded">{step}</span>
-                            {si < role.steps.length - 1 && <ArrowRight size={10} className="text-[#D1D5DB]" />}
+                          <div key={step} className="flex items-center gap-1">
+                            <span className="text-[#9CA3AF] text-[10px] sm:text-xs bg-[#F3F4F6] px-1.5 sm:px-2 py-0.5 rounded whitespace-nowrap">
+                              {step}
+                            </span>
+                            {si < role.steps.length - 1 && (
+                              <ArrowRight size={8} className="sm:size-[10px] text-[#D1D5DB] shrink-0" />
+                            )}
                           </div>
                         ))}
                       </div>
 
                       {/* Footer */}
-                      <div className="flex items-center justify-between pt-3 border-t border-[#F3F4F6]">
-                        <span className="text-[#9CA3AF] text-xs">{role.preview}</span>
+                      <div className="flex items-center justify-between pt-2 sm:pt-3 border-t border-[#F3F4F6]">
+                        <span className="text-[#9CA3AF] text-[10px] sm:text-xs truncate">{role.preview}</span>
                         <motion.span
                           className={role.arrowColor}
                           animate={{ x: 0 }}
                           whileHover={{ x: 3 }}
                         >
-                          <ArrowRight size={17} />
+                          <ArrowRight size={14} className="sm:size-[17px]" />
                         </motion.span>
                       </div>
                     </motion.button>
@@ -271,7 +301,7 @@ export default function App() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="max-w-5xl mx-auto mt-8 flex flex-wrap gap-2 justify-center"
+                className="max-w-5xl mx-auto mt-6 sm:mt-8 flex flex-wrap gap-1.5 sm:gap-2 justify-center"
               >
                 {[
                   "QR Code par table", "0 inscription client", "KDS temps réel",
@@ -279,14 +309,14 @@ export default function App() {
                   "Mode sombre cuisine", "Plans tarifaires", "Workflow validation",
                   "Toasts temps réel", "Horloge live", "Timers cuisine",
                 ].map((feat) => (
-                  <span key={feat} className="bg-white border border-[#E5E7EB] text-[#6B7280] text-xs px-3 py-1.5 rounded-full hover:border-[#D97706]/50 hover:text-[#D97706] transition-colors cursor-default">
+                  <span key={feat} className="bg-white border border-[#E5E7EB] text-[#6B7280] text-[10px] sm:text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-full hover:border-[#D97706]/50 hover:text-[#D97706] transition-colors cursor-default">
                     {feat}
                   </span>
                 ))}
               </motion.div>
             </div>
 
-            <footer className="text-center py-4 text-[#9CA3AF] text-xs border-t border-[#E5E7EB]">
+            <footer className="text-center py-3 sm:py-4 text-[#9CA3AF] text-[10px] sm:text-xs border-t border-[#E5E7EB] px-4">
               WinResto MVP v1.0 · Solution SaaS de commande à table · Cotonou, Bénin 🌍
             </footer>
           </motion.div>
